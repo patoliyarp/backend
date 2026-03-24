@@ -1,4 +1,7 @@
 import express from "express";
+import { errorMiddleware } from "./middleware/error.middleware";
+import { invalidRouteMiddleware } from "./middleware/invalidRoute.middleware";
+
 const app = express();
 
 app.use(express.json());
@@ -15,6 +18,12 @@ import postRoute from "./routes/posts/port.route";
 //Declare routes
 app.use("/api/user", userRoute);
 app.use("/api/post", postRoute);
+
+//Handle invalid route error
+app.use(invalidRouteMiddleware);
+
+//Global error handling middleware
+app.use(errorMiddleware);
 
 export { app };
 
