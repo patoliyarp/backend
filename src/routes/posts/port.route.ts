@@ -3,6 +3,7 @@ import {
   addPost,
   deletePost,
   getAllPost,
+  getHeavyPost,
   getPost,
   updatePost,
 } from "../../controller/posts/post.controller";
@@ -15,4 +16,5 @@ router.get("/getall", getAllPost);
 router.post("/addpost", validateData(postSchema), addPost);
 router.patch("/updatepost/:id", updatePost);
 router.delete("/deletepost/:id", deletePost);
+router.get("/getheavypost", getHeavyPost);
 export default router;

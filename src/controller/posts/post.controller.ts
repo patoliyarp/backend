@@ -1,6 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import { ApiError } from "../../utils/ApiError";
 import axios from "axios";
+import path from "path";
+import { Worker } from "worker_threads";
 
 /**
  * @async
@@ -178,4 +180,50 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { getPost, getAllPost, addPost, updatePost, deletePost };
+/**
+ * @async
+ * @function getHeavyPost
+ * @description Perform complex calculation using worker thread
+ *
+ * @param {Request} req - Express request object contains value to perform complex calculation on it
+ * @param {Response} res - Express response object.
+ * @param {NextFunction} next - Express next middleware function.
+ *
+ * @returns return heavy complex calculated answer
+ */
+const getHeavyPost = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { value } = req.body;
+
+    //Handle worker path for typescript esm
+    const workerPath = path.resolve(__dirname, "../../utils/Worker.ts");
+
+    //Initialize worker thread instance
+    const worker = new Worker(workerPath, {
+      execArgv: ["--import", "ts-node/esm"],
+      workerData: { num: value },
+    });
+
+    //listen worker response and send 
+    worker.on("message", (data) => {
+      res.status(200).json({
+        success: true,
+        message: "Get heavy post successfully",
+        data,
+      });
+    });
+
+    //listen worker error
+    worker.on("error", (err) => {
+      next(new ApiError(`Error while get Heavy post ${err}`, 500));
+    });
+  } catch (error) {
+    next(new ApiError(`Error while get Heavy post ${error}`, 500));
+  }
+};
+
+export { getPost, getAllPost, addPost, updatePost, deletePost, getHeavyPost };
