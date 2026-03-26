@@ -14,10 +14,11 @@ app.use(requestLoggerMiddleware);
 //Routes imports
 import userRoute from "./routes/user/user.route";
 import postRoute from "./routes/posts/port.route";
-
+import postsRouter from "./routes/posts/posts.route";
 //Declare routes
 app.use("/api/user", userRoute);
 app.use("/api/post", postRoute);
+app.use("/api/v2/post", postsRouter);
 
 //Handle invalid route error
 app.use(invalidRouteMiddleware);

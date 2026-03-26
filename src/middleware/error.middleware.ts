@@ -35,12 +35,6 @@ export const errorMiddleware = async (
     err = new ApiError(message, 400);
   }
 
-  //Handle not operational api error
-  if (!(err instanceof ApiError)) {
-    const message = "Something went wrong";
-    err = new ApiError(message, 500);
-  }
-
   res.status(err.statusCode).json({
     success: false,
     message: err.message || "Internal Server Error",
