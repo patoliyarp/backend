@@ -71,13 +71,13 @@ async function addPosts(
  *
  * @async
  * @function updatePosts
- * @param {Request<{ id: Number }, {}, Partial<Posts>>} req - Express request object with 'id' as URL param and update data in the body.
+ * @param {Request<{ id: string }, {}, Partial<Posts>>} req - Express request object with 'id' as URL param and update data in the body.
  * @param {Response} res - Express response object used to send back the updated post.
  * @param {NextFunction} next - Callback to pass control to the next middleware or error handler.
  * @returns {Promise<void>} Responds with JSON containing success status, message, and the updated post or passes an error.
  */
 async function updatePosts(
-  req: Request<{ id: Number }, {},Partial<Posts>>,
+  req: Request<{ id: string }, {}, Partial<Posts>>,
   res: Response,
   next: NextFunction,
 ) {
@@ -112,13 +112,13 @@ async function updatePosts(
  *
  * @async
  * @function deletePosts
- * @param {Request<{ id: Number }, {}, Posts>} req - Express request object with 'id' as URL param.
+ * @param {Request<{ id: string }, {}, Posts>} req - Express request object with 'id' as URL param.
  * @param {Response} res - Express response object used to send back confirmation of deletion.
  * @param {NextFunction} next - Callback to pass control to the next middleware or error handler.
  * @returns {Promise<void>} Responds with JSON containing success status, message, and the deleted post or passes an error.
  */
 async function deletePosts(
-  req: Request<{ id: Number }, {}, Posts>,
+  req: Request<{ id: string }, {}, Posts>,
   res: Response,
   next: NextFunction,
 ) {

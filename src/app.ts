@@ -1,20 +1,23 @@
 import express from "express";
 import { errorMiddleware } from "./middleware/error.middleware";
 import { invalidRouteMiddleware } from "./middleware/invalidRoute.middleware";
+import { requestLoggerMiddleware } from "./middleware/requestLogger.middleware";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 //Request Logger middleware
-import { requestLoggerMiddleware } from "./middleware/requestLogger.middleware";
 app.use(requestLoggerMiddleware);
 
 //Routes imports
 import userRoute from "./routes/user/user.route";
 import postRoute from "./routes/posts/port.route";
 import postsRouter from "./routes/posts/posts.route";
+
 //Declare routes
 app.use("/api/user", userRoute);
 app.use("/api/post", postRoute);
