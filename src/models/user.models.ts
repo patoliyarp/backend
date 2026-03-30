@@ -9,6 +9,9 @@ export interface IUser extends Document {
   username: string;
   email: string;
   password: string;
+  role: string;
+  avatar: string;
+  image_public_id: string;
   accessToken?: string;
   comparePassword(password: string): Promise<boolean>;
   generateRefreshToken(): string;
@@ -44,6 +47,17 @@ const userSchema = new Schema<IUser>(
       required: [true, "Password required"],
       min: 8,
     },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
+    avatar: {
+      type: String,
+    },
+    image_public_id: {
+      type: String,
+    },
     accessToken: {
       type: String,
     },
@@ -71,8 +85,8 @@ userSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {
       id: this._id,
-      username: this.username,
       email: this.email,
+      role: this.role,
     },
     JWT_SECRET,
     {

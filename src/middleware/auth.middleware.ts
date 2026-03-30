@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { ApiError } from "../utils/ApiError";
-import { DecodeToken } from "../types/type";
+import { DecodeToken, UserToken } from "../types/type";
 
 interface AuthRequest extends Request {
-  user?: string | JwtPayload;
+  user?: UserToken | JwtPayload;
 }
 
 export const authMiddleware = async (
@@ -28,8 +28,8 @@ export const authMiddleware = async (
     //Decode user info from jwt token
     const decodeUser = {
       id: (decode as DecodeToken).email,
-      username: (decode as DecodeToken).username,
       email: (decode as DecodeToken).email,
+      role: (decode as DecodeToken).role,
     };
 
     if (!decode) {

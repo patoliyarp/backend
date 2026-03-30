@@ -8,6 +8,7 @@ import {
 import { validateData } from "../../middleware/validation.middleware";
 import { postsSchema } from "../../schema/postsSchema";
 import { authMiddleware } from "../../middleware/auth.middleware";
+import { authRoleMiddleware } from "../../middleware/authRole.middleware";
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.get("/getall", getPosts);
 router.post("/addpost", validateData(postsSchema), addPosts);
 
 //Protected route
-router.use(authMiddleware);
+router.use(authMiddleware, authRoleMiddleware("admin"));
 router.patch("/updatepost/:id", updatePosts);
 router.delete("/deletepost/:id", deletePosts);
 export default router;
