@@ -2,6 +2,8 @@ import type { NextFunction, Request, Response } from "express";
 import type { UserType } from "../../schema/userSchema";
 import { ApiError } from "../../utils/ApiError";
 import { User } from "../../models/user.models";
+import { UploadToCloudinary } from "../../utils/Cloudinary";
+
 const getUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     res.status(200).json({
@@ -25,6 +27,7 @@ const getUser = async (req: Request, res: Response, next: NextFunction) => {
  *   @param req.body.username - The desired username for the new user
  *   @param req.body.email - The email address for the new user
  *   @param req.body.password - The password for the new user
+ *   @param req.file.avatar - The avatar file for user profile
  * @param res - Express Response object to send JSON response
  * @param next - Express NextFunction for error handling
  * @returns Promise resolving with a JSON response containing signup success message and user data
@@ -51,11 +54,21 @@ async function signup(
       return next(new ApiError("user already exists", 409));
     }
 
+    //Handle avatar upload
+    const avatarImage = req.file?.buffer;
+
+    let imageUrl;
+    if (avatarImage) {
+      imageUrl = await UploadToCloudinary(avatarImage);
+    }
+
     //Create new user
     const newUser = await User.create({
       username,
       email,
       password,
+      avatar: imageUrl?.secure_url,
+      image_public_id: imageUrl?.public_id,
     });
 
     const userObj = {
