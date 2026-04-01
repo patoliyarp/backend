@@ -3,6 +3,9 @@ import type { UserType } from "../../schema/userSchema";
 import { ApiError } from "../../utils/ApiError";
 import { User } from "../../models/user.models";
 import { UploadToCloudinary } from "../../utils/Cloudinary";
+import crypto from "crypto";
+import emailQueue from "../../queue/emailQueue";
+import smsQueue from "../../queue/smsQueue";
 
 const getUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -28,6 +31,7 @@ const getUser = async (req: Request, res: Response, next: NextFunction) => {
  *   @param req.body.email - The email address for the new user
  *   @param req.body.password - The password for the new user
  *   @param req.file.avatar - The avatar file for user profile
+ *   @param req.body.mobile - The mobile number of user
  * @param res - Express Response object to send JSON response
  * @param next - Express NextFunction for error handling
  * @returns Promise resolving with a JSON response containing signup success message and user data
@@ -71,6 +75,46 @@ async function signup(
       image_public_id: imageUrl?.public_id,
     });
 
+    if (!newUser) {
+      return next(new ApiError("Error while register user", 400));
+    }
+    //Send email after creating new user
+    //Generate token for verify user
+    const verificationToken = newUser.getVerificationToken();
+    await newUser.save({ validateBeforeSave: false });
+
+    //Verify token route url and mail message
+    const verificationUrl = `${req.protocol}://${req.get("host")}/api/user/verifyemail/${verificationToken}`;
+    const message: any = verificationUrl;
+
+    //Send mail
+    // const mail = await sendEmail({
+    //   email: newUser.email,
+    //   subject: "Email Verification",
+    //   message,
+    // });
+
+    const options = {
+      email: newUser.email,
+      subject: "Email Verification",
+      message,
+    };
+    const job = await emailQueue.add(
+      "sendEmail",
+      { options },
+      { attempts: 2, backoff: 5000 },
+    );
+
+    //Send sms to user
+    let number = req.body?.mobile;
+    if (number) {
+      const sendSms = await smsQueue.add(
+        "sendSms",
+        { number },
+        { attempts: 2 },
+      );
+    }
+
     const userObj = {
       username: newUser.username,
       email: newUser.email,
@@ -78,9 +122,116 @@ async function signup(
 
     res.status(200).json({
       success: true,
-      message: "User signup successfully ",
+      message: "User signup successfully please check your email to verify ",
       user: userObj,
     });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * handle user Verify email.
+ *
+ * @param req - Express Request with  URL params,  query params
+ *   @param req.params.token - Token to validate user
+ * @param res - Express Response object to send JSON response
+ * @param next - Express NextFunction for error handling
+ * @returns Promise resolving with a JSON response containing email verified message
+ */
+async function verifyEmail(req: Request, res: Response, next: NextFunction) {
+  try {
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(req?.params?.token as string)
+      .digest("hex");
+
+    const user = await User.findOne({
+      verificationToken: hashedToken,
+    });
+
+    if (!user) {
+      return next(new ApiError("Invalid or expired token", 400));
+    }
+
+    if (user.isVerified) {
+      return next(new ApiError("User is verified", 409));
+    }
+
+    if (
+      user.verificationTokenExpire &&
+      user.verificationTokenExpire.getTime() < Date.now()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Token expired",
+        email: user.email,
+      });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpire = undefined;
+    await user.save();
+
+    const message = "welcome to our website";
+    const options = {
+      email: user.email,
+      subject: "Welcome email",
+      message,
+    };
+
+    const job = await emailQueue.add(
+      "welcomeMail",
+      { options },
+      { attempts: 2, backoff: 5000 },
+    );
+
+    res
+      .status(200)
+      .json({ success: true, message: "Email verified successfully" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * handle resend verification email
+ *
+ * @param req - Express Request with  body
+ *   @param req.body.emil- Email to fetch user
+ * @param res - Express Response object to send JSON response
+ * @param next - Express NextFunction for error handling
+ * @returns Promise resolving with a JSON response containing email verified message
+ */
+async function resendEmail(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { email } = req.body;
+
+    const existingUser = await User.findOne({ email: email });
+
+    if (!existingUser) {
+      return next(new ApiError("User is not found", 404));
+    }
+
+    if (existingUser.isVerified) {
+      return next(new ApiError("User is verified", 409));
+    }
+
+    const verificationToken = existingUser.getVerificationToken();
+    await existingUser.save({ validateBeforeSave: false });
+
+    const verificationUrl = `${req.protocol}://${req.get("host")}/api/user/verifyemail/${verificationToken}`;
+
+    const options = {
+      email: existingUser.email,
+      subject: "New Verification Link",
+      message: `Your new link: ${verificationUrl}`,
+    };
+    await emailQueue.add("sendEmail", { options });
+    res
+      .status(200)
+      .json({ success: true, message: "Email verified successfully" });
   } catch (error) {
     next(error);
   }
@@ -171,4 +322,4 @@ async function signout(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-export { getUser, signup, signin, signout };
+export { getUser, signup, signin, signout, verifyEmail, resendEmail };

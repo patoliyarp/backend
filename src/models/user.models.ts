@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
+import crypto from "crypto";
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
 //Create interface to add methods to schema
@@ -10,11 +10,16 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: string;
+  isVerified: boolean;
+  verificationToken: string | undefined;
+  verificationTokenExpire: Date | undefined;
   avatar: string;
   image_public_id: string;
   accessToken?: string;
+  mobile: string;
   comparePassword(password: string): Promise<boolean>;
   generateRefreshToken(): string;
+  getVerificationToken(): string;
 }
 
 const userSchema = new Schema<IUser>(
@@ -51,6 +56,19 @@ const userSchema = new Schema<IUser>(
       type: String,
       enum: ["user", "admin"],
       default: "user",
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+    },
+    verificationTokenExpire: {
+      type: Date,
+    },
+    mobile: {
+      type: String,
     },
     avatar: {
       type: String,
@@ -94,4 +112,20 @@ userSchema.methods.generateRefreshToken = function () {
     },
   );
 };
+
+//Add verification token method
+userSchema.methods.getVerificationToken = function () {
+  const token = crypto.randomBytes(20).toString("hex");
+
+  //hash the token before save
+  this.verificationToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+
+  //token expire in 30min
+  this.verificationTokenExpire = Date.now() + 30 * 60 * 1000;
+  return token;
+};
+
 export const User = mongoose.model<IUser>("User", userSchema);
