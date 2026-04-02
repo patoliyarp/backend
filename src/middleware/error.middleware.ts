@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { ApiError } from "../utils/ApiError";
+import logger from "../config/logger.config";
 export const errorMiddleware = async (
   err: any,
   req: Request,
@@ -34,6 +35,8 @@ export const errorMiddleware = async (
     const message = "JSON Web Token has expired. Try again.";
     err = new ApiError(message, 400);
   }
+
+  logger.error(err.message);
 
   res.status(err.statusCode).json({
     success: false,
