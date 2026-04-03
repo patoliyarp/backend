@@ -4,6 +4,8 @@ import { invalidRouteMiddleware } from "./middleware/invalidRoute.middleware";
 import { requestLoggerMiddleware } from "./middleware/requestLogger.middleware";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
+import "./services/eventEmitter";
+import "./services/email.service"
 
 const app = express();
 

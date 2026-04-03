@@ -6,6 +6,8 @@ import { UploadToCloudinary } from "../../utils/Cloudinary";
 import crypto from "crypto";
 import emailQueue from "../../queue/emailQueue";
 import smsQueue from "../../queue/smsQueue";
+import eventBus from "../../services/eventEmitter";
+import { publisher } from "../../config/redisClient";
 
 const getUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -181,11 +183,18 @@ async function verifyEmail(req: Request, res: Response, next: NextFunction) {
       message,
     };
 
-    const job = await emailQueue.add(
-      "welcomeMail",
-      { options },
-      { attempts: 2, backoff: 5000 },
-    );
+    //Send email using bull mq add job to queue
+    // const job = await emailQueue.add(
+    //   "welcomeMail",
+    //   { options },
+    //   { attempts: 2, backoff: 5000 },
+    // );
+
+    //Send an email using event emitter
+    // eventBus.emit("userSignup", options);
+
+    //Send mail using redis pub sub model
+    await publisher.publish("userSignup", JSON.stringify(options));
 
     res
       .status(200)
