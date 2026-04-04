@@ -5,7 +5,7 @@ import { requestLoggerMiddleware } from "./middleware/requestLogger.middleware";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import "./services/eventEmitter";
-import "./services/email.service"
+import "./services/email.service";
 
 const app = express();
 
@@ -18,22 +18,10 @@ app.use(helmet());
 app.use(requestLoggerMiddleware);
 
 //Routes imports
-import userRoute from "./routes/user/user.route";
-import postRoute from "./routes/posts/port.route";
-import postsRouter from "./routes/posts/posts.route";
-import streamRouter from "./routes/stream/stream.route";
-import {
-  authLimiter,
-  publicLimiter,
-  rateLimitMiddleware,
-} from "./middleware/rateLimit.middleware";
+import mainRouter from "./routes/index.route";
 
 //Declare routes
-app.use("/api/user", authLimiter, userRoute);
-app.use(rateLimitMiddleware);
-app.use("/api/post", postRoute);
-app.use("/api/v2/post", postsRouter);
-app.use("/api/stream", streamRouter);
+app.use("/", mainRouter);
 
 //Handle invalid route error
 app.use(invalidRouteMiddleware);

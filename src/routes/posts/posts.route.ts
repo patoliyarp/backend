@@ -12,12 +12,17 @@ import { authRoleMiddleware } from "../../middleware/authRole.middleware";
 
 const router = express.Router();
 
-//Public route
-router.get("/getall", getPosts);
-router.post("/addpost", validateData(postsSchema), addPosts);
+//Get route
+router.get("/all/:page", getPosts);
 
-//Protected route
+//Post route
+router.post("/", validateData(postsSchema), addPosts);
+
 router.use(authMiddleware, authRoleMiddleware("admin"));
-router.patch("/updatepost/:id", updatePosts);
-router.delete("/deletepost/:id", deletePosts);
+//Patch route
+router.patch("/:id", updatePosts);
+
+//Delete route
+router.delete("/:id", deletePosts);
+
 export default router;

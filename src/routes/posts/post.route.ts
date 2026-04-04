@@ -13,11 +13,15 @@ import { postValidationRules } from "../../schema/expressValidate";
 import { expressValidation } from "../../middleware/expressValidater.middleware";
 const router = express.Router();
 
+//Get routes
 router.get("/", getPost);
-router.get("/getall", getAllPost);
-// router.post("/addpost", validateData(postSchema), addPost);
-router.post("/addpost", postValidationRules, expressValidation, addPost);
-router.patch("/updatepost/:id", updatePost);
-router.delete("/deletepost/:id", deletePost);
+router.get("/all", getAllPost);
 router.get("/getheavypost", getHeavyPost);
+
+//Post routes
+router.post("/", postValidationRules, expressValidation, addPost);
+router.patch("/:id", updatePost);
+router.delete("/:id", deletePost);
+// router.post("/addpost", validateData(postSchema), addPost);
+
 export default router;

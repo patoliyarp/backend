@@ -2,6 +2,7 @@ import { NextFunction, Response, Request } from "express";
 import { Post } from "../../models/post.models";
 import { ApiError } from "../../utils/ApiError";
 import type { Posts } from "../../schema/postsSchema";
+import logger from "../../config/logger.config";
 
 /**
  * Retrieves all posts from the database.
@@ -14,13 +15,24 @@ import type { Posts } from "../../schema/postsSchema";
  * @returns {Promise<void>} Responds with JSON containing success status and an array of posts or passes an error.
  */
 async function getPosts(
-  req: Request<{}, {}, Posts>,
+  req: Request<{ page: number }, {}, Posts>,
   res: Response,
   next: NextFunction,
 ) {
   try {
-    const posts = await Post.find().lean();
+    const { page } = req.params;
+    const limit = 5;
+    const skip = (page - 1) * limit;
+    console.log("start fetch");
+    logger.info("start fetch");
+    const posts = await Post.find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ title: 1 })
+      .lean();
+    logger.info("end fetch");
 
+    console.log("end fetch");
     if (!posts) {
       return next(new ApiError("Post not exists in database", 400));
     }
