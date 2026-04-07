@@ -8,7 +8,7 @@ import {
 import { validateData } from "../../middleware/validation.middleware";
 import { postsSchema } from "../../schema/postsSchema";
 import { authMiddleware } from "../../middleware/auth.middleware";
-import { authRoleMiddleware } from "../../middleware/authRole.middleware";
+// import { authRoleMiddleware } from "../../middleware/authRole.middleware";
 
 const router = express.Router();
 
