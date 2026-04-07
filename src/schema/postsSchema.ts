@@ -11,7 +11,7 @@ export const postsSchema = z.object({
     })
     .optional(),
   views: z.number().int().optional(),
-  userId: z.number().int(),
+  userId: z.string().optional(),
 });
 
 export type Posts = z.infer<typeof postsSchema>;

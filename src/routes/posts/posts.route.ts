@@ -13,12 +13,12 @@ import { authRoleMiddleware } from "../../middleware/authRole.middleware";
 const router = express.Router();
 
 //Get route
-router.get("/all/:page", getPosts);
+router.get("/", getPosts);
 
 //Post route
+router.use(authMiddleware);
 router.post("/", validateData(postsSchema), addPosts);
 
-router.use(authMiddleware, authRoleMiddleware("admin"));
 //Patch route
 router.patch("/:id", updatePosts);
 
