@@ -1,14 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { ApiError } from "../utils/ApiError";
 import { DecodeToken, UserToken } from "../types/type";
 
-interface AuthRequest extends Request {
-  user?: UserToken | JwtPayload;
-}
-
 export const authMiddleware = async (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
@@ -26,8 +22,8 @@ export const authMiddleware = async (
     const decode = jwt.verify(token, JWT_SECRET);
 
     //Decode user info from jwt token
-    const decodeUser = {
-      id: (decode as DecodeToken).email,
+    const decodeUser: UserToken = {
+      id: (decode as DecodeToken).id,
       email: (decode as DecodeToken).email,
       role: (decode as DecodeToken).role,
     };

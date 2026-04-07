@@ -6,7 +6,7 @@ import { UploadToCloudinary } from "../../utils/Cloudinary";
 import crypto from "crypto";
 import emailQueue from "../../queue/emailQueue";
 import smsQueue from "../../queue/smsQueue";
-import eventBus from "../../services/eventEmitter";
+// import eventBus from "../../services/eventEmitter";
 import { publisher } from "../../config/redisClient";
 
 const getUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -86,8 +86,8 @@ async function signup(
     await newUser.save({ validateBeforeSave: false });
 
     //Verify token route url and mail message
-    const verificationUrl = `${req.protocol}://${req.get("host")}/api/user/verifyemail/${verificationToken}`;
-    const message: any = verificationUrl;
+    const verificationUrl = `${req.protocol}://${req.get("host")}/api/v1/users/verifyemail/${verificationToken}`;
+    const message: string = verificationUrl;
 
     //Send mail
     // const mail = await sendEmail({
@@ -101,20 +101,19 @@ async function signup(
       subject: "Email Verification",
       message,
     };
-    const job = await emailQueue.add(
+
+    //email Job add to queue
+    await emailQueue.add(
       "sendEmail",
       { options },
       { attempts: 2, backoff: 5000 },
     );
 
     //Send sms to user
-    let number = req.body?.mobile;
+    const number = req.body?.mobile;
     if (number) {
-      const sendSms = await smsQueue.add(
-        "sendSms",
-        { number },
-        { attempts: 2 },
-      );
+      //add sms job to queue
+      await smsQueue.add("sendSms", { number }, { attempts: 2 });
     }
 
     const userObj = {
