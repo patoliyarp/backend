@@ -31,6 +31,7 @@ export default defineConfig([
       "node_modules/",
       "eslint.config.mjs",
       "src/utils/Callback.ts",
+      "src/test",
     ],
   },
 ]);
