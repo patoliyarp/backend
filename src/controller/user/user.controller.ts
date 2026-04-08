@@ -7,7 +7,7 @@ import crypto from "crypto";
 import emailQueue from "../../queue/emailQueue";
 import smsQueue from "../../queue/smsQueue";
 // import eventBus from "../../services/eventEmitter";
-import { publisher } from "../../config/redisClient";
+import { publisher } from "../../pubsub/redisClient";
 
 const getUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
