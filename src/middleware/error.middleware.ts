@@ -1,8 +1,14 @@
-import type { Request, Response, NextFunction } from "express";
+import type {
+  Request,
+  Response,
+  NextFunction,
+  ErrorRequestHandler,
+} from "express";
 import { ApiError } from "../utils/ApiError";
 import logger from "../config/logger.config";
-export const errorMiddleware = async (
-  err: any,
+
+export const errorMiddleware: ErrorRequestHandler = async (
+  err,
   req: Request,
   res: Response,
   next: NextFunction,
