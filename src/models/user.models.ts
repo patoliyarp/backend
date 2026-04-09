@@ -1,7 +1,8 @@
 import mongoose, { Schema, Document } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
+import crypto from "crypto";
+import logger from "../config/logger.config";
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
 //Create interface to add methods to schema
@@ -9,9 +10,18 @@ export interface IUser extends Document {
   username: string;
   email: string;
   password: string;
+  role: string;
+  isVerified: boolean;
+  verificationToken: string | undefined;
+  verificationTokenExpire: Date | undefined;
+  avatar: string;
+  image_public_id: string;
   accessToken?: string;
+  mobile: string;
+  // eslint-disable-next-line no-unused-vars
   comparePassword(password: string): Promise<boolean>;
   generateRefreshToken(): string;
+  getVerificationToken(): string;
 }
 
 const userSchema = new Schema<IUser>(
@@ -44,6 +54,30 @@ const userSchema = new Schema<IUser>(
       required: [true, "Password required"],
       min: 8,
     },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+    },
+    verificationTokenExpire: {
+      type: Date,
+    },
+    mobile: {
+      type: String,
+    },
+    avatar: {
+      type: String,
+    },
+    image_public_id: {
+      type: String,
+    },
     accessToken: {
       type: String,
     },
@@ -57,12 +91,13 @@ userSchema.pre("save", async function () {
     try {
       this.password = await bcrypt.hash(this.password, 10);
     } catch (error) {
-      throw new Error("Password hashing failed");
+      // throw new Error();
+      logger.error(error);
     }
 });
 
 //Add password compare method to userSchema
-userSchema.methods.comparePassword = async function (password: any) {
+userSchema.methods.comparePassword = async function (password: string) {
   return await bcrypt.compare(password, this.password);
 };
 
@@ -71,8 +106,8 @@ userSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {
       id: this._id,
-      username: this.username,
       email: this.email,
+      role: this.role,
     },
     JWT_SECRET,
     {
@@ -80,4 +115,20 @@ userSchema.methods.generateRefreshToken = function () {
     },
   );
 };
+
+//Add verification token method
+userSchema.methods.getVerificationToken = function () {
+  const token = crypto.randomBytes(20).toString("hex");
+
+  //hash the token before save
+  this.verificationToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+
+  //token expire in 30min
+  this.verificationTokenExpire = Date.now() + 30 * 60 * 1000;
+  return token;
+};
+
 export const User = mongoose.model<IUser>("User", userSchema);
