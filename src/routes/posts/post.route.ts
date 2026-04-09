@@ -7,8 +7,8 @@ import {
   getPost,
   updatePost,
 } from "../../controller/posts/post.controller";
-import { validateData } from "../../middleware/validation.middleware";
-import { postSchema } from "../../schema/postSchema";
+// import { validateData } from "../../middleware/validation.middleware";
+// import { postSchema } from "../../schema/postSchema";
 import { postValidationRules } from "../../schema/expressValidate";
 import { expressValidation } from "../../middleware/expressValidater.middleware";
 const router = express.Router();

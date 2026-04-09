@@ -1,4 +1,4 @@
-import z, { ZodError } from "zod";
+import z from "zod";
 
 export const postsSchema = z.object({
   title: z.string().min(5, "title must be at least 5 character long"),
