@@ -12,6 +12,7 @@ export const userSchema = z.object(
     password: z
       .string({ message: "Password must be required with proper format" })
       .min(8, { message: "Password must be at least 8 characters long" }),
+    mobile: z.string("mobile must be in valid format").optional(),
   },
   { message: "all fields must be required" },
 );

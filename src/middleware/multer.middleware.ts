@@ -1,7 +1,7 @@
-import multer, { MulterError } from "multer";
-import path from "path";
+import multer from "multer";
+// import path from "path";
 
-const uploadPath = path.resolve(__dirname, "..", "uploads");
+// const uploadPath = path.resolve(__dirname, "..", "uploads");
 
 //Upload in disk storage
 // const storage = multer.diskStorage({

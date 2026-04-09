@@ -1,15 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { ApiError } from "../utils/ApiError";
-import { UserToken } from "../types/type";
-import { JwtPayload } from "jsonwebtoken";
 
-//Express request extend to access user
-interface AuthRequest extends Request {
-  user?: UserToken | JwtPayload;
-}
 
 export const authRoleMiddleware = (...allowedRole: string[]) => {
-  return (req: AuthRequest, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     try {
       const role = req.user?.role;
 
