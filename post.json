@@ -1,0 +1,21 @@
+{
+  "post": [
+    {
+      "id": 5,
+      "title": "wake up to reality",
+      "body": "nothing ever gos as planned in this world the longer you live the more you realize the only thing that truly exists are  pain,suffering, futility",
+      "tags": [
+        "suffering",
+        "pain",
+        "anime"
+      ],
+      "reactions": {
+        "likes": 192,
+        "dislikes": 25
+      },
+      "views": 305,
+      "userId": 121
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
