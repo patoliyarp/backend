@@ -3,26 +3,28 @@ import { errorMiddleware } from "./middleware/error.middleware";
 import { invalidRouteMiddleware } from "./middleware/invalidRoute.middleware";
 import { requestLoggerMiddleware } from "./middleware/requestLogger.middleware";
 import cookieParser from "cookie-parser";
-
+import helmet from "helmet";
+import "./services/eventEmitter";
+import "./services/email.service";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocs from "./swagger-output.json";
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(helmet());
 
 //Request Logger middleware
 app.use(requestLoggerMiddleware);
 
 //Routes imports
-import userRoute from "./routes/user/user.route";
-import postRoute from "./routes/posts/port.route";
-import postsRouter from "./routes/posts/posts.route";
+import mainRouter from "./routes/index.route";
 
 //Declare routes
-app.use("/api/user", userRoute);
-app.use("/api/post", postRoute);
-app.use("/api/v2/post", postsRouter);
+app.use("/", mainRouter);
 
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 //Handle invalid route error
 app.use(invalidRouteMiddleware);
 

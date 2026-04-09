@@ -8,15 +8,21 @@ import {
 import { validateData } from "../../middleware/validation.middleware";
 import { postsSchema } from "../../schema/postsSchema";
 import { authMiddleware } from "../../middleware/auth.middleware";
+// import { authRoleMiddleware } from "../../middleware/authRole.middleware";
 
 const router = express.Router();
 
-//Public route
-router.get("/getall", getPosts);
-router.post("/addpost", validateData(postsSchema), addPosts);
+//Get route
+router.get("/", getPosts);
 
-//Protected route
+//Post route
 router.use(authMiddleware);
-router.patch("/updatepost/:id", updatePosts);
-router.delete("/deletepost/:id", deletePosts);
+router.post("/", validateData(postsSchema), addPosts);
+
+//Patch route
+router.patch("/:id", updatePosts);
+
+//Delete route
+router.delete("/:id", deletePosts);
+
 export default router;
