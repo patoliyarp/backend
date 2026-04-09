@@ -2,7 +2,7 @@ import { NextFunction, Response, Request } from "express";
 import { Post } from "../../models/post.models";
 import { ApiError } from "../../utils/ApiError";
 import type { Posts } from "../../schema/postsSchema";
-import { cacheClient } from "../../config/redisClient";
+import { cacheClient } from "../../pubsub/redisClient";
 
 //create an key based on params
 function constructKey(req: Request) {
@@ -39,7 +39,7 @@ async function getPosts(
   const sortQuery = req.query.sort;
   const sortByDate = sortQuery === "desc" ? -1 : sortQuery === "asc" ? 1 : "";
   const tags = (req.query.tags as string[]) || [];
-  const page = parseInt(req.query.page as string);
+  const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 6;
   const skip = (page - 1) * limit;
 
