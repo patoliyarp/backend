@@ -1,9 +1,10 @@
 import { configDotenv } from "dotenv";
 import nodemailer from "nodemailer";
+import { MailOptions } from "../types/type";
 configDotenv();
 
 //Send email helper function that execute in worker
-const sendWelcomeEmail = async (options: any) => {
+const sendWelcomeEmail = async (options: MailOptions) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
