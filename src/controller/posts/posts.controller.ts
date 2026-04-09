@@ -2,15 +2,14 @@ import { NextFunction, Response, Request } from "express";
 import { Post } from "../../models/post.models";
 import { ApiError } from "../../utils/ApiError";
 import type { Posts } from "../../schema/postsSchema";
-import { redisCacheClient } from "../../services/redisCache";
+import { cacheClient } from "../../pubsub/redisClient";
 
 //create an key based on params
-function constructKey(req: Request<any, any, any, any>) {
+function constructKey(req: Request) {
   // api:posts
   const baseUrl = req.path.replace(/^\+|\/+$/g, "").replace(/\//g, ":");
-  console.log("base url", baseUrl);
-  // Merge route params and query params to accurately cache varying requests (like /posts?page=2)
-  const params = { ...req.params, ...req.query } as Record<string, any>;
+  // Merge route params and query params to accurately
+  const params = { ...req.params, ...req.query } as Record<string, unknown>;
 
   const sortedParams = Object.keys(params)
     .sort()
@@ -31,15 +30,16 @@ function constructKey(req: Request<any, any, any, any>) {
  * @returns {Promise<void>} Responds with JSON containing success status and an array of posts or passes an error.
  */
 async function getPosts(
-  req: Request<{ page: number }, {}, Posts>,
+  req: Request<{}, {}, Posts>,
   res: Response,
   next: NextFunction,
 ) {
+  //Get query params
   const query = req.query.q;
   const sortQuery = req.query.sort;
   const sortByDate = sortQuery === "desc" ? -1 : sortQuery === "asc" ? 1 : "";
   const tags = (req.query.tags as string[]) || [];
-  const page = parseInt(req.query.page as string);
+  const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 6;
   const skip = (page - 1) * limit;
 
@@ -59,13 +59,12 @@ async function getPosts(
   }
 
   try {
-    const totalPosts = await Post.find().countDocuments();
-
     // :limit=6&page=2&q=wake&sort=desc&tags=anime
     const KEY = constructKey(req);
 
-    const cachedPosts = await redisCacheClient.get(KEY);
+    const cachedPosts = await cacheClient.get(KEY);
 
+    //return response if cache is exists
     if (cachedPosts) {
       return res.status(200).json({
         success: true,
@@ -84,9 +83,8 @@ async function getPosts(
       return next(new ApiError("Post not exists in database", 400));
     }
 
-    //Implement redis caching
-
-    await redisCacheClient.set(KEY, JSON.stringify(posts), {
+    //Implement redis caching if not exist
+    await cacheClient.set(KEY, JSON.stringify(posts), {
       expiration: { type: "EX", value: 60 * 30 },
     });
 
@@ -114,9 +112,8 @@ async function addPosts(
   try {
     const posts = req.body;
     const userId = req?.user?.id;
-    console.log("");
     posts.userId = userId;
-    console.log("posts ", posts);
+
     //Create new post in database
     const newPost = await Post.create(posts);
 
@@ -124,7 +121,9 @@ async function addPosts(
       return next(new ApiError("Error while create post", 500));
     }
 
-    redisCacheClient.flushAll();
+    //After adding new post remove all cached data
+    cacheClient.flushAll();
+
     res.status(200).json({
       success: true,
       message: "Post add successfully",
@@ -265,7 +264,9 @@ async function getPostById(req: Request, res: Response, next: NextFunction) {
       message: "post get successfully",
       post: posts,
     });
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
 }
 
 export { getPosts, addPosts, updatePosts, deletePosts, getPostById };

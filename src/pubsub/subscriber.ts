@@ -1,5 +1,5 @@
 import logger from "../config/logger.config";
-import { subscriber } from "../config/redisClient";
+import { subscriber } from "./redisClient";
 import { sendWelcomeEmail } from "../utils/WelcomeMail";
 
 //Initialize redis subscription
