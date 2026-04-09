@@ -5,6 +5,6 @@ export const invalidRouteMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  let err = new ApiError(`Can't find ${req.originalUrl} on this server!`, 404);
+  const err = new ApiError(`Can't find ${req.originalUrl} on this server!`, 404);
   next(err);
 };
