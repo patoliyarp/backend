@@ -7,6 +7,6 @@ eventBus.on("userSignup", async (options) => {
   try {
     await sendWelcomeEmail(options);
   } catch (error) {
-    logger.error("error while send welcome mail using event emitter");
+    logger.error(error);
   }
 });

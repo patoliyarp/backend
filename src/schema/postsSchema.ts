@@ -1,4 +1,4 @@
-import z, { ZodError } from "zod";
+import z from "zod";
 
 export const postsSchema = z.object({
   title: z.string().min(5, "title must be at least 5 character long"),
@@ -11,7 +11,7 @@ export const postsSchema = z.object({
     })
     .optional(),
   views: z.number().int().optional(),
-  userId: z.number().int(),
+  userId: z.string().optional(),
 });
 
 export type Posts = z.infer<typeof postsSchema>;

@@ -1,4 +1,4 @@
-import winston, { createLogger, format, transport, transports } from "winston";
+import winston, { createLogger, format, transports } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 
 const customLevels = {

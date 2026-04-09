@@ -8,9 +8,8 @@ const requestLoggerMiddleware = (
 ) => {
   const timestamp = new Date().toISOString();
   logger.info(`${req.method} ${req.url}`, {
-    requestId: (req as any).requestId,
-    userId: (req as any)?.user,
-    method: req.method,
+    userId: req?.user?.id,
+    method: req?.method,
     url: req.url,
   });
 
