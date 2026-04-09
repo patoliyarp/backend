@@ -1,9 +1,9 @@
-import type { JwtPayload } from "jsonwebtoken";
+import { UserToken } from "./type";
 
 declare global {
-  export namespace Express {
-    interface Request {
-      user?: string | JwtPayload;
+  namespace Express {
+    export interface Request {
+      user?: UserToken;
     }
   }
 }

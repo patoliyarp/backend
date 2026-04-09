@@ -1,9 +1,11 @@
 import express from "express";
 import {
   getUser,
+  resendEmail,
   signin,
   signout,
   signup,
+  verifyEmail,
 } from "../../controller/user/user.controller";
 import { validateData } from "../../middleware/validation.middleware";
 import { userSchema } from "../../schema/userSchema";
@@ -13,8 +15,12 @@ import { imageValidateMiddleware } from "../../middleware/imageValidation.middle
 
 const router = express.Router();
 
-//Public route
+//Get routes
 router.get("/", getUser);
+router.get("/verifyemail/:token", verifyEmail);
+router.get("/signout", authMiddleware, signout);
+
+//Post routes
 router.post(
   "/signup",
   upload.single("avatar"),
@@ -23,8 +29,6 @@ router.post(
   signup,
 );
 router.post("/signin", signin);
-
-//Protected route
-router.get("/signout", authMiddleware, signout);
+router.post("/resnedemail", resendEmail);
 
 export default router;
