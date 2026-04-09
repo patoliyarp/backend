@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import logger from "../config/logger.config";
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
 //Create interface to add methods to schema
@@ -17,6 +18,7 @@ export interface IUser extends Document {
   image_public_id: string;
   accessToken?: string;
   mobile: string;
+  // eslint-disable-next-line no-unused-vars
   comparePassword(password: string): Promise<boolean>;
   generateRefreshToken(): string;
   getVerificationToken(): string;
@@ -89,12 +91,13 @@ userSchema.pre("save", async function () {
     try {
       this.password = await bcrypt.hash(this.password, 10);
     } catch (error) {
-      throw new Error("Password hashing failed");
+      // throw new Error();
+      logger.error(error);
     }
 });
 
 //Add password compare method to userSchema
-userSchema.methods.comparePassword = async function (password: any) {
+userSchema.methods.comparePassword = async function (password: string) {
   return await bcrypt.compare(password, this.password);
 };
 

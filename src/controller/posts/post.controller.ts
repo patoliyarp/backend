@@ -200,7 +200,7 @@ const getHeavyPost = async (
     const { value } = req.body;
 
     //Handle worker path for typescript esm
-    const workerPath = path.resolve(__dirname, "../../utils/Worker.ts");
+    const workerPath = path.resolve(__dirname, "../../utils/Worker.js");
 
     //Initialize worker thread instance
     const worker = new Worker(workerPath, {
