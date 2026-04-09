@@ -20,8 +20,8 @@ export async function sendSms(mobile: number): Promise<void> {
     });
 
     console.log(`Success sms job! SID: ${message.sid}`);
-  } catch (error: any) {
-    console.error(`Error: ${error.message}`);
+  } catch (error) {
+    console.error(`Error: ${error}`);
     throw error;
   }
 }

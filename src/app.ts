@@ -6,7 +6,8 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import "./services/eventEmitter";
 import "./services/email.service";
-
+import swaggerUi from "swagger-ui-express";
+import swaggerDocs from "./swagger-output.json";
 const app = express();
 
 app.use(express.json());
@@ -23,6 +24,7 @@ import mainRouter from "./routes/index.route";
 //Declare routes
 app.use("/", mainRouter);
 
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 //Handle invalid route error
 app.use(invalidRouteMiddleware);
 
