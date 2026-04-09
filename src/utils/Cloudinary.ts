@@ -1,8 +1,8 @@
-import { v2 as cloudinary, UploadApiResponse, UploadStream } from "cloudinary";
-import fs from "fs";
-import sharp = require("sharp");
-import path = require("path");
-import { Readable } from "stream";
+import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
+// import fs from "fs";
+import sharp from "sharp";
+// import path from "path";
+// import { Readable } from "stream";
 cloudinary.config({
   cloud_name: "dym0mnyjv",
   api_key: `${process.env.CLOUDINARY_API_KEY}`,
