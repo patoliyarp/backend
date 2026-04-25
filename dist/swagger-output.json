@@ -1,0 +1,327 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "v1.0.0",
+        "title": "Learning Backend",
+        "description": "this  is a seamless platform that connects clients with verified legal experts, offering secure communication, easy appointment booking, transparent pricing, and comprehensive legal services all in one place."
+    },
+    "host": "localhost:3000",
+    "basePath": "/",
+    "schemes": ["http", "https"],
+    "paths": {
+        "/api/v1/users/signup": {
+            "post": {
+                "tags": ["User"],
+                "description": "user signup or register controller",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "username": {
+                                    "example": "any"
+                                },
+                                "email": {
+                                    "example": "any"
+                                },
+                                "password": {
+                                    "example": "any"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/v1/users/signin": {
+            "post": {
+                "tags": ["User"],
+                "description": "User signin or login ",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "UsernameOrEmail": {
+                                    "example": "any"
+                                },
+                                "password": {
+                                    "example": "any"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/v1/users/verifyemail/{token}": {
+            "get": {
+                "tags": ["User"],
+                "description": "user verify based on token send in email",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
+        "/api/v1/users/resnedemail": {
+            "post": {
+                "tags": ["User"],
+                "description": "resend email ",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "email": {
+                                    "example": "any"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/v1/users/signout": {
+            "get": {
+                "tags": ["User"],
+                "description": "logout or signout user",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/v1/posts/": {
+            "get": {
+                "tags": ["v1/Post"],
+                "description": "json server get post",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["v1/Post"],
+                "description": "json server add post",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "example": "any"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                }
+            }
+        },
+        "/api/v1/posts/{id}": {
+            "patch": {
+                "tags": ["v1/Post"],
+                "description": "json server update post",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["v1/Post"],
+                "description": "json server delete post",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                }
+            }
+        },
+        "/api/v1/posts/all": {
+            "get": {
+                "tags": ["v1/Post"],
+                "description": "json server get all post",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/v1/posts/getheavypost": {
+            "get": {
+                "tags": ["v1/Post"],
+                "description": "get heavy time to check worker thread ",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/v2/posts/": {
+            "get": {
+                "tags": ["v2/Post"],
+                "description": "get post from database",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "tags": ["v2/Post"],
+                "description": "add new post",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "title": {
+                                    "example": "any"
+                                },
+                                "body": {
+                                    "example": "any"
+                                },
+                                "tags": {
+                                    "example": "any"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v2/posts/{id}": {
+            "patch": {
+                "tags": ["v2/Post"],
+                "description": "update post by user specific",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["v2/Post"],
+                "description": "delete post",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/stream/readstream": {
+            "get": {
+                "tags": ["Stream"],
+                "description": "read stream of text file",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/stream/readpicture": {
+            "get": {
+                "tags": ["Stream"],
+                "description": "read image chunk by chunk",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        }
+    }
+}
