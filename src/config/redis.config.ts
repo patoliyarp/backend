@@ -10,6 +10,7 @@ function createConnection(): Redis {
     // Critical settings for BullMQ
     maxRetriesPerRequest: null,
     enableReadyCheck: false,
+    tls: {},
   });
 }
 
